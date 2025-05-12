@@ -7,8 +7,6 @@
 #include "costmap_node.hpp" 
 #include "rclcpp/rclcpp.hpp"
 
-namespace robot {
-
 CostmapNode::CostmapNode() : Node("costmap_node"),
   costmap_(rclcpp::get_logger("CostmapNode"))
 {
@@ -118,4 +116,10 @@ void CostmapNode::laserCallback(const sensor_msgs::msg::LaserScan::SharedPtr sca
   publishCostmap();
 }
 
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<CostmapNode>());
+  rclcpp::shutdown();
+  return 0;
 }

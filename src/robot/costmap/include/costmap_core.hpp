@@ -19,7 +19,6 @@ class CostmapCore {
     double inflation_radius_;
     double max_cost_;
     double orientation_;
-    double inflation_radius_;
     int length_;
 
     std::vector<double> ranges_;

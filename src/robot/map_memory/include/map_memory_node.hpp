@@ -3,8 +3,8 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "map_memory_core.hpp"
-#include "nav_msgs/msg/odometry.hpp"
-#include "nav_msgs/msg/occupancy_grid.hpp"
+// #include "nav_msgs/msg/odometry.hpp"
+// #include "nav_msgs/msg/occupancy_grid.hpp"
 
 class MapMemoryNode : public rclcpp::Node {
   public:
@@ -13,15 +13,15 @@ class MapMemoryNode : public rclcpp::Node {
   private:
     robot::MapMemoryCore map_memory_;
 
-    void MapMemoryNode::costmapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
-    void MapMemoryNode::odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
-    void MapMemoryNode::updateMap();
-    void MapMemoryNode::integrateCostmap();
+    // void MapMemoryNode::costmapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+    // void MapMemoryNode::odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
+    // void MapMemoryNode::updateMap();
+    // void MapMemoryNode::integrateCostmap();
 
-    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr costmap_sub_;
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
-    rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr grid_pub_;
-    rclcpp::TimerBase::SharedPtr timer_;
+    // rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr costmap_sub_;
+    // rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
+    // rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr grid_pub_;
+    // rclcpp::TimerBase::SharedPtr timer_;
     
 };
 
