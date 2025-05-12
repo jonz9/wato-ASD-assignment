@@ -42,4 +42,12 @@ install(DIRECTORY
   config
   DESTINATION share/${PROJECT_NAME})
 
+
 ament_package()
+
+
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+
+add_executable(planner_node src/planner_node.cpp)
+ament_target_dependencies(planner_node rclcpp nav_msgs geometry_msgs)
