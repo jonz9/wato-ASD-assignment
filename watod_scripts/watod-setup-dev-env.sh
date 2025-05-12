@@ -37,7 +37,7 @@ cat << EOF > $VSCODE_DIR/c_cpp_properties.json
             "name": "Linux",
             "includePath": [
                 "\${workspaceFolder}/**",
-                "/tmp/deps/**"
+                "/tmp/deps/**",
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
