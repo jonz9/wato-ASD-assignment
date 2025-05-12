@@ -16,8 +16,8 @@ class CostmapNode : public rclcpp::Node {
     void initializeCostmap();
     void convertToGrid(double range, double angle, int &x_grid, int &y_grid);
     void markObstacle(int x_grid, int y_grid);
-    void inflateObstacles();
-    void publishCostmap();
+    void inflateObstacle(int x_grid, int y_grid);
+    void publishCostmap(sensor_msgs::msg::LaserScan::SharedPtr scan);
 
     robot::CostmapCore costmap_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_sub_;

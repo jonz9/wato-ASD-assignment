@@ -11,14 +11,13 @@ CostmapNode::CostmapNode() : Node("costmap_node"),
   costmap_(rclcpp::get_logger("CostmapNode"))
 {
   costmap_.resolution_ = 0.1;
-  costmap_.inflation_radius_ = 1.0;
   costmap_.max_cost_ = 100;
-  costmap_.origin_x_ = -10.0;
-  costmap_.origin_y_ = -10.0;
-  costmap_.length_ = static_cast<int>(20.0 / costmap_.resolution_);
+  costmap_.origin_x_ = -5.0;
+  costmap_.origin_y_ = -5.0;
+  costmap_.length_ = 100;
   costmap_.orientation_ = 1.0;
   costmap_.inflation_radius_ = 1.0;
-  costmap_.occupancy_grid_.resize(costmap_.length_, std::vector<int>(costmap_.length_, 0));
+  costmap_.occupancy_grid_.resize(costmap_.length_, std::vector<int>(costmap_.length_, -1));
 
   laser_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
     "/lidar", 10, std::bind(&CostmapNode::laserCallback, this, std::placeholders::_1));
@@ -28,7 +27,7 @@ CostmapNode::CostmapNode() : Node("costmap_node"),
 
 void CostmapNode::initializeCostmap() {
   for (auto &row : costmap_.occupancy_grid_) {
-    std::fill(row.begin(), row.end(), 0);
+    std::fill(row.begin(), row.end(), -1);
   }
 }
 
@@ -46,39 +45,27 @@ void CostmapNode::markObstacle(int x, int y) {
   }
 }
 
-void CostmapNode::inflateObstacles() {
-  std::vector<std::vector<int>> inflated = costmap_.occupancy_grid_;
-  
-  // calculate how many cells the inflation radius covers
+void CostmapNode::inflateObstacle(int x_grid, int y_grid) {
   int radius_cells = static_cast<int>(costmap_.inflation_radius_ / costmap_.resolution_);
 
-  for (int y = 0; y < costmap_.length_; ++y) {
-    for (int x = 0; x < costmap_.length_; ++x) {
-      // if found obstacle, inflate around it
-      if (costmap_.occupancy_grid_[y][x] == costmap_.max_cost_) {
-        for (int dy = -radius_cells; dy <= radius_cells; ++dy) {
-          for (int dx = -radius_cells; dx <= radius_cells; ++dx) {
-            int nx = x + dx;
-            int ny = y + dy;
-            if (nx >= 0 && ny >= 0 && nx < costmap_.length_ && ny < costmap_.length_) {
-              double distance = std::hypot(dx * costmap_.resolution_, dy * costmap_.resolution_);
-              if (distance <= costmap_.inflation_radius_) {
-                int new_cost = static_cast<int>(costmap_.max_cost_ * (1.0 - distance / costmap_.inflation_radius_));
-                inflated[ny][nx] = std::max(inflated[ny][nx], new_cost);
-              }
-            }
-          }
+  for (int dy = -radius_cells; dy <= radius_cells; ++dy) {
+    for (int dx = -radius_cells; dx <= radius_cells; ++dx) {
+      int nx = x_grid + dx;
+      int ny = y_grid + dy;
+      if (nx >= 0 && ny >= 0 && nx < costmap_.length_ && ny < costmap_.length_) {
+        double distance = std::hypot(dx * costmap_.resolution_, dy * costmap_.resolution_);
+        if (distance <= costmap_.inflation_radius_) {
+          int new_cost = static_cast<int>(costmap_.max_cost_ * (1.0 - distance / costmap_.inflation_radius_));
+          costmap_.occupancy_grid_[ny][nx] = std::max(costmap_.occupancy_grid_[ny][nx], new_cost);
         }
       }
     }
   }
-  costmap_.occupancy_grid_ = inflated;
 }
 
-void CostmapNode::publishCostmap() {
+void CostmapNode::publishCostmap(sensor_msgs::msg::LaserScan::SharedPtr scan) {
   nav_msgs::msg::OccupancyGrid grid_msg;
-  grid_msg.header.stamp = this->now();
-  grid_msg.header.frame_id = "map";
+  grid_msg.header = scan->header; 
 
   grid_msg.info.resolution = costmap_.resolution_;
   grid_msg.info.width = costmap_.length_;
@@ -86,7 +73,6 @@ void CostmapNode::publishCostmap() {
   grid_msg.info.origin.position.x = costmap_.origin_x_;
   grid_msg.info.origin.position.y = costmap_.origin_y_;
   grid_msg.info.origin.orientation.w = 1.0;
-
   grid_msg.data.resize(costmap_.length_ * costmap_.length_, 0);
   for (int y = 0; y < costmap_.length_; ++y) {
     for (int x = 0; x < costmap_.length_; ++x) {
@@ -105,15 +91,22 @@ void CostmapNode::laserCallback(const sensor_msgs::msg::LaserScan::SharedPtr sca
     double angle = scan->angle_min + i * scan->angle_increment;
     double range = scan->ranges[i];
 
-    if (range >= scan->range_min && range <= scan->range_max) {
+    if (range > scan->range_min && range < scan->range_max) {
       int x, y;
       convertToGrid(range, angle, x, y);
       markObstacle(x, y);
+      inflateObstacle(x, y);
+
+      // if (x >= 0 && x < costmap_.length_ &&
+      //     y >= 0 && y < costmap_.length_) {
+      //   int index = y * costmap_.length_ + x;
+      //   costmap_.occupancy_grid_[y][x] = 100;
+
+      //   inflateObstacle(x, y);
+      // }
     }
   }
-
-  inflateObstacles();
-  publishCostmap();
+  publishCostmap(scan);
 }
 
 int main(int argc, char ** argv)
