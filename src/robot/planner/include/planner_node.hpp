@@ -26,7 +26,7 @@ class PlannerNode : public rclcpp::Node {
 
     State current_state_;
 
-    
+
     robot::PlannerCore planner_;
     // Subscribers
     rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_sub_;
@@ -62,7 +62,6 @@ class PlannerNode : public rclcpp::Node {
     void mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
     void goalCallback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
     void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
-
 
 };
 
