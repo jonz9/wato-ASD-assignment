@@ -2,6 +2,7 @@
 #define COSTMAP_CORE_HPP_
 
 #include "rclcpp/rclcpp.hpp"
+#include "geometry_msgs/msg/pose.hpp"
 
 namespace robot
 {
@@ -15,10 +16,9 @@ class CostmapCore {
     double angle_max_;
     double angle_increment_;
     double resolution_;
-    double origin_x_, origin_y_;
     double inflation_radius_;
     double max_cost_;
-    double orientation_;
+    geometry_msgs::msg::Pose pose_;
     int length_;
 
     std::vector<double> ranges_;
