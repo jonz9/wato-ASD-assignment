@@ -13,8 +13,8 @@ endif()
 # Search for dependencies required for building this package
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(nav_msgs REQUIRED)       # ⬅ required for nav_msgs::msg
-find_package(geometry_msgs REQUIRED)  # ⬅ required for geometry_msgs::msg
+find_package(nav_msgs REQUIRED) 
+find_package(geometry_msgs REQUIRED)
 
 # Build library from core planner logic
 add_library(planner_lib
