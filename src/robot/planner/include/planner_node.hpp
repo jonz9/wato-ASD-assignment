@@ -22,6 +22,14 @@ class PlannerNode : public rclcpp::Node {
   public:
     PlannerNode();
 
+    void mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+    void goalCallback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
+    void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
+    void publishPath(const std::vector<geometry_msgs::msg::PoseStamped>& poses);
+    void checkGoalAndReplan();
+    void timerCallback();
+    void planPath();
+
   private:
     enum class State
     {
@@ -30,7 +38,6 @@ class PlannerNode : public rclcpp::Node {
         PLANNING
     };
 
-    State current_state_;
     State state_;
 
     robot::PlannerCore planner_;
@@ -41,14 +48,6 @@ class PlannerNode : public rclcpp::Node {
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr path_pub_;
     rclcpp::TimerBase::SharedPtr timer_;
 
-    // Callbacks
-    void mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
-    void goalCallback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
-    void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
-    void publishPath(const std::vector<geometry_msgs::msg::PoseStamped>& poses);
-    void checkGoalAndReplan();
-    void timerCallback();
-    void planPath();
 
     // Data storage
     nav_msgs::msg::OccupancyGrid latest_map_;
