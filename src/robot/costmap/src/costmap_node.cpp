@@ -12,10 +12,10 @@ CostmapNode::CostmapNode() : Node("costmap_node"),
 {
   costmap_.resolution_ = 0.1;
   costmap_.max_cost_ = 100;
-  costmap_.pose_.position.x = -5.0;
-  costmap_.pose_.position.y = -5.0;
+  costmap_.pose_.position.x = -25.0;
+  costmap_.pose_.position.y = -25.0;
   costmap_.pose_.orientation.w = 1.0;
-  costmap_.length_ = 100;
+  costmap_.length_ = 500;
   costmap_.inflation_radius_ = 1.5;
   costmap_.occupancy_grid_.resize(costmap_.length_, std::vector<int>(costmap_.length_, -1));
 
