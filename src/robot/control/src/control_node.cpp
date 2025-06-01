@@ -98,21 +98,22 @@ double ControlNode::extractYaw(const geometry_msgs::msg::Quaternion &quat) {
 geometry_msgs::msg::Twist ControlNode::computeVelocity(const geometry_msgs::msg::PoseStamped &target) {
   geometry_msgs::msg::Twist cmd;
   double distance = computeDistance(target.pose.position, robot_odom_->pose.pose.position);
-  if (distance < control_.goal_tolerance_ || goal_reached_) {
-    geometry_msgs::msg::Twist stop_cmd;
-    stop_cmd.linear.x = 0.0;
-    stop_cmd.angular.z = 0.0;
-    cmd_pub_->publish(stop_cmd);
 
-    current_path_.reset();
-    return stop_cmd;
-  } else {
-    cmd.linear.x = control_.linear_velocity_;
-    double angle_to_target = std::atan2(target.pose.position.y - robot_odom_->pose.pose.position.y,
-                                         target.pose.position.x - robot_odom_->pose.pose.position.x);
-    double angle_diff = angle_to_target - extractYaw(robot_odom_->pose.pose.orientation);
-    cmd.angular.z = control_.steering_gain_ * angle_diff;
+  if (distance < control_.goal_tolerance_) {
+    goal_reached_ = true;
+    cmd.linear.x = 0.0;
+    cmd.angular.z = 0.0;
+
+    current_path_.reset(); // reset the path after reaching the goal
+    return cmd; // stop the robot
   }
+
+  cmd.linear.x = control_.linear_velocity_;
+  double angle_to_target = std::atan2(target.pose.position.y - robot_odom_->pose.pose.position.y,
+                                        target.pose.position.x - robot_odom_->pose.pose.position.x);
+  double angle_diff = angle_to_target - extractYaw(robot_odom_->pose.pose.orientation);
+  cmd.angular.z = control_.steering_gain_ * angle_diff;
+
   return cmd;
 }
 
