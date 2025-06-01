@@ -19,7 +19,7 @@ private:
   PlannerCore planner_;
   State state_;
 
-  // ROS interfaces
+  // Subscriptions and publishers
   rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_sub_;
   rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr goal_sub_;
   rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
@@ -32,14 +32,13 @@ private:
   geometry_msgs::msg::Pose robot_pose_;
   bool goal_received_ = false;
 
-
   // Callbacks
   void mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
   void goalCallback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
   void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
   void timerCallback();
 
-  // Helpers
+  // Helper functions
   bool goalReached() const;
   void planPath();
 };

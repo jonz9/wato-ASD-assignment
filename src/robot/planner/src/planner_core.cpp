@@ -40,7 +40,8 @@ CellIndex PlannerCore::pointToCell(const geometry_msgs::msg::Point &point, const
 void PlannerCore::createPlan(const nav_msgs::msg::OccupancyGrid &map,
                              const geometry_msgs::msg::Pose &start,
                              const geometry_msgs::msg::Point &goal,
-                             nav_msgs::msg::Path &path) {
+                             nav_msgs::msg::Path &path,
+                             const rclcpp::Time &timestamp) {
   CellIndex start_cell = poseToCell(start, map);
   CellIndex goal_cell = pointToCell(goal, map);
 
@@ -77,6 +78,8 @@ void PlannerCore::createPlan(const nav_msgs::msg::OccupancyGrid &map,
   while (came_from.find(current) != came_from.end()) {
     geometry_msgs::msg::PoseStamped pose_stamped;
     pose_stamped.pose = cellToPose(current, map);
+    pose_stamped.header.stamp = timestamp;
+    pose_stamped.header.frame_id = map.header.frame_id;
     path.poses.push_back(pose_stamped);
     current = came_from[current];
   }

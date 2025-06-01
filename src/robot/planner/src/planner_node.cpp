@@ -56,9 +56,9 @@ void PlannerNode::planPath() {
   }
 
   auto path = std::make_shared<nav_msgs::msg::Path>();
-  planner_.createPlan(current_map_, robot_pose_, goal_.point, *path);
+  planner_.createPlan(current_map_, robot_pose_, goal_.point, *path, this->now());
   path->header.stamp = this->now();
-  path->header.frame_id = "map";
+  path->header.frame_id = current_map_.header.frame_id;
   path_pub_->publish(*path);
 }
 }
